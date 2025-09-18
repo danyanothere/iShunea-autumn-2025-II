@@ -1,35 +1,27 @@
-import { UserButton } from "@clerk/nextjs";
-import { MainNav } from "@/components/main-nav";
-import StoreSwitcher from "@/components/store-switcher";
-import { auth } from "@clerk/nextjs/server";
-import prismadb from "@/lib/prismadb";
-import { redirect } from "next/navigation";
+import Container from "@/components/ui/container";
+import Link from "next/link";
+import MainNav from "@/components/main-nav";
+import getCategories from "@/actions/get-categories";
+import NavbarActions from "@/components/navbar-actions";
 
 const Navbar = async () => {
-
-    const { userId } = await auth();
-    if (!userId) {
-        redirect ("/sign-in");
-    }
-
-    const stores = await prismadb.store.findMany({
-        where: {
-            userId
-        },
-
-    })
+    const categories = await getCategories();
 
     return (
-        <div className="border-b"> 
-           <div className="flex h-16 items-center px-4"> 
-            <StoreSwitcher items={stores} />
-            <MainNav className="mx-6" />
-            <div className="ml-auto flex items-center space-x-4">
-            <UserButton afterSignOutUrl="/"/>
-            </div>
-           </div>
+    
+    <div className="border-b">
+        <Container>
+            <div className="relative px-4 sm:px-6 lg:px-8 flex h-16 items-center">
+        <Link href="/" className="ml-4 flex lg:ml-0 gap-x-2">
+        <p className="font-bold text-xl">STORE</p>
+        </Link>
+        <MainNav data={categories}/>
+        <NavbarActions/>
         </div>
-    )
+        </Container>
+        
+    </div>
+  );
 }
 
 export default Navbar;
